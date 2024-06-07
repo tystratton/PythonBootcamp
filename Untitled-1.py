@@ -1,1 +1,0 @@
-print("100 days of Python")
