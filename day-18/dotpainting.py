@@ -15,49 +15,49 @@ screen.colormode()
 colors = colorgram.extract('painting.jpg', 10)
 
 # Extracting colors from images and making dot painting
-height = 10
-width = 10
-count = 0
-count_height = 0
-snake = False
-while count_height <= height:
-    while count <= width:
-        color = colors[random.randint(0,9)]
-        timmy.pencolor(color.rgb)
-        timmy.pendown()
-        if snake == False:
-            timmy.circle(5)
-            timmy.penup()
-            timmy.forward(80)
-        else:
-            timmy.circle(5)
-            timmy.penup()
-            timmy.forward(-80)
-        count+=1
-    timmy.right(90)
-    timmy.forward(80)
-    timmy.left(90)
-    if snake == False:
-        snake = True
-        timmy.forward(-80)
-    else:
-        snake = False
-        timmy.forward(80)
-    count = 0
-    count_height += 1
+# height = 10
+# width = 10
+# count = 0
+# count_height = 0
+# snake = False
+# while count_height <= height:
+#     while count <= width:
+#         color = colors[random.randint(0,9)]
+#         timmy.pencolor(color.rgb)
+#         timmy.pendown()
+#         if snake == False:
+#             timmy.circle(5)
+#             timmy.penup()
+#             timmy.forward(80)
+#         else:
+#             timmy.circle(5)
+#             timmy.penup()
+#             timmy.forward(-80)
+#         count+=1
+#     timmy.right(90)
+#     timmy.forward(80)
+#     timmy.left(90)
+#     if snake == False:
+#         snake = True
+#         timmy.forward(-80)
+#     else:
+#         snake = False
+#         timmy.forward(80)
+#     count = 0
+#     count_height += 1
 
 
 
 #spinograph
-# go = True
-# side = 0
-# while go == True:
-#     r = random.randint(1,255)
-#     g = random.randint(1,255)
-#     b = random.randint(1,255)
-#     timmy.pencolor(r,g,b)
-#     timmy.circle(80)
-#     timmy.right(10)
+go = True
+side = 0
+while go == True:
+    r = random.randint(1,255)
+    g = random.randint(1,255)
+    b = random.randint(1,255)
+    timmy.pencolor(r,g,b)
+    timmy.circle(80)
+    timmy.right(10)
         
 
 # Random walk
