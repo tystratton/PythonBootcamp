@@ -1,0 +1,2 @@
+
+    "agreeTermsOfService": "yes",

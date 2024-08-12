@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import os
 import requests
 from datetime import datetime as dt, timedelta
+import smtplib
+import re
 load_dotenv()
 
 STOCK_NAME = "TSLA"
@@ -10,15 +12,19 @@ COMPANY_NAME = "Tesla Inc"
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 
+password = "eujacxmckvtfiprx"
+my_email = "occultupdates@gmail.com"
+to_email = "tysonthetyrant@gmail.com"
+
     ## STEP 1: Use https://www.alphavantage.co/documentation/#daily
 # When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
-parameters = {
+stock_parameters = {
     "function": "TIME_SERIES_DAILY",
     "symbol": STOCK_NAME,
-    "apikey": os.getenv("API_KEY")
+    "apikey": os.getenv("STOCK_API_KEY")
 }
 
-response = requests.get(url=STOCK_ENDPOINT, params=parameters)
+response = requests.get(url=STOCK_ENDPOINT, params=stock_parameters)
 response.raise_for_status()
 stock_data = response.json()
 #2 days ago
@@ -37,30 +43,44 @@ price_yesterday = float(stock_data["Time Series (Daily)"][date_yesterday]["4. cl
 
 #TODO 3. - Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20. Hint: https://www.w3schools.com/python/ref_func_abs.asp
 diff = abs(price_today - price_yesterday)
-print(price_today)
-print(price_yesterday)
-print(diff)
+
+
 
 #TODO 4. - Work out the percentage difference in price between closing price yesterday and closing price the day before yesterday.
+percent = diff/price_yesterday * 100
 
 #TODO 5. - If TODO4 percentage is greater than 5 then print("Get News").
+if percent > 4: 
+#Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+    news_parameters = {
+    "apiKey": os.getenv("NEWS_API_KEY"),
+    "q": COMPANY_NAME,
+    }
 
-    ## STEP 2: https://newsapi.org/ 
-    # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
-
-#TODO 6. - Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
-
-#TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
-
-
-    ## STEP 3: Use twilio.com/docs/sms/quickstart/python
-    #to send a separate message with each article's title and description to your phone number. 
-
-#TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
-
-#TODO 9. - Send each article as a separate message via Twilio. 
-
-
+    response = requests.get(url=NEWS_ENDPOINT, params=news_parameters)
+    response.raise_for_status()
+    news_data = response.json()
+#7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+    article = news_data["articles"]
+#8. - Send each article as a separate message via Twilio. 
+    try:
+        connection = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        connection.login(user=my_email,password=password)
+        message = (
+            "Subject: Price Change Alert\n"
+            "From: " + my_email + "\n"
+            "To: " + to_email + "\n\n"
+            "Price change for: " + STOCK_NAME + "\n" +
+            article[0]["title"] + " " + article[0]["url"] + "\n" +
+            article[1]["title"] + " " + article[1]["url"] + "\n" +
+            article[2]["title"] + " " + article[2]["url"]
+        )
+        message = re.sub(r'[^\x00-\x7F]+', '', message)
+        print(message)
+        connection.sendmail(from_addr=my_email, to_addrs=to_email, msg=message)
+        connection.close()
+    except TimeoutError as e:
+        print("Error: unable to send email")
 
 #Optional TODO: Format the message like this: 
 """

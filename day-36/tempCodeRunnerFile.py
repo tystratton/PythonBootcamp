@@ -1,0 +1,1 @@
+connection.sendmail(from_addr=my_email, to_addrs=to_email, msg=message)
