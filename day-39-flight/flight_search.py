@@ -1,9 +1,16 @@
 import requests
 from dotenv import load_dotenv
 import os
+from datetime import datetime as dt, timedelta
+from pprint import pprint
 
 load_dotenv()
+
+tomorrow = dt.now() + timedelta(days=1)
+tomorrow = str(tomorrow.strftime("%Y-%m-%d"))
+
 amadeus = "https://test.api.amadeus.com/v1"
+amadeus2 = "https://test.api.amadeus.com/v2"
 class FlightSearch:
     def __init__(self):
         self._api_key = os.getenv("AMADEUS_API_KEY")
@@ -37,3 +44,19 @@ class FlightSearch:
         code = requests.get(url=city_endpoint,params=body,headers=headers)
         code = code.json()["data"][0]["iataCode"]
         return code
+    
+    def get_price(self,data):
+        price_endpoint = f"{amadeus2}/shopping/flight-offers"
+        body = {
+            "originLocationCode": "IND",
+            "destinationLocationCode": data,
+            "departureDate": tomorrow,
+            "adults": 1,
+            "nonStop": "true",
+        }
+        headers = {
+            "Authorization": f"Bearer {self._token}"
+        }
+        response = requests.get(url=price_endpoint,params=body,headers=headers)
+        response = response.json()
+        pprint(response)
